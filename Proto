@@ -1,0 +1,156 @@
+import React, { useState, useEffect } from 'react';
+import { Search, Map, Calendar, User, Menu, Star, MapPin, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
+
+const WhatToDoApp = () => {
+  const [activeScreen, setActiveScreen] = useState('home');
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [filterRating, setFilterRating] = useState(0);
+  const [city, setCity] = useState('Orlando');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const { latitude, longitude } = position.coords;
+        if (latitude && longitude) {
+          if (latitude < 29.0) setCity('Daytona Beach');
+          else setCity('Orlando');
+        }
+      });
+    }
+  }, []);
+
+  const categories = [
+    { id: 'food', name: 'Food & Dining', color: 'bg-orange-500', icon: '🍽️' },
+    { id: 'drinks', name: 'Drinks & Bars', color: 'bg-purple-500', icon: '🍸' },
+    { id: 'nightlife', name: 'Nightlife & Clubs', color: 'bg-indigo-600', icon: '🎵' },
+    { id: 'entertainment', name: 'Entertainment', color: 'bg-red-500', icon: '🎭' },
+    { id: 'parks', name: 'Theme Parks', color: 'bg-green-500', icon: '🎢' },
+    { id: 'events', name: 'Events', color: 'bg-yellow-500', icon: '🎉' },
+    { id: 'arts', name: 'Arts & Culture', color: 'bg-pink-500', icon: '🎨' },
+    { id: 'outdoors', name: 'Outdoors', color: 'bg-emerald-500', icon: '🏞️' },
+  ];
+
+  const popularVenues = [
+    { id: 1, name: 'The Rusty Spoon', category: 'food', image: 'https://via.placeholder.com/120x120?text=Rusty+Spoon', rating: 4.7, distance: '0.8 mi', reviews: ['Amazing food!', 'Great service!'], lat: 28.5383, lng: -81.3792, city: 'Orlando' },
+    { id: 2, name: 'Universal Studios', category: 'parks', image: 'https://via.placeholder.com/120x120?text=Universal', rating: 4.9, distance: '7.2 mi', reviews: ['A must-visit!', 'Thrilling rides!'], lat: 28.4812, lng: -81.4705, city: 'Orlando' },
+    { id: 3, name: 'Dr. Phillips Center', category: 'entertainment', image: 'https://via.placeholder.com/120x120?text=Phillips+Center', rating: 4.8, distance: '1.2 mi', reviews: ['Great shows!', 'Beautiful venue!'], lat: 28.5411, lng: -81.3789, city: 'Orlando' },
+    { id: 4, name: 'Loch Haven Park', category: 'arts', image: 'https://via.placeholder.com/120x120?text=Loch+Haven+Park', rating: 4.6, distance: '2.0 mi', reviews: ['Lovely cultural area.', 'Perfect for family visits.'], lat: 28.5704, lng: -81.3693, city: 'Orlando' },
+    { id: 5, name: 'The Plaza Live', category: 'entertainment', image: 'https://via.placeholder.com/120x120?text=Plaza+Live', rating: 4.5, distance: '1.5 mi', reviews: ['Awesome shows!', 'Great acoustics!'], lat: 28.5455, lng: -81.3516, city: 'Orlando' }
+  ];
+
+  const filteredVenues = popularVenues.filter(venue => venue.rating >= filterRating && venue.city === city && venue.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  const renderMap = () => (
+    <div className="p-4">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
+      <div className="w-full h-96 bg-gray-300 flex items-center justify-center text-gray-600">Map Placeholder</div>
+      <button onClick={() => setActiveScreen('home')} className="mt-4 text-blue-500 underline">Back to Home</button>
+    </div>
+  );
+
+  const renderHome = () => (
+    <div className="p-4 space-y-4">
+      <div className="flex items-center gap-2">
+        <Search className="text-gray-500" />
+        <input
+          type="text"
+          placeholder="Search venues..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full border border-gray-300 rounded px-2 py-1"
+        />
+        <Map onClick={() => setActiveScreen('map')} className="text-gray-500 cursor-pointer" />
+      </div>
+
+      <div className="text-sm text-gray-600">Showing results in <strong>{city}</strong></div>
+
+      <div className="grid grid-cols-2 gap-3">
+        {categories.map(cat => (
+          <button
+            key={cat.id}
+            className={`flex items-center justify-center p-3 text-white rounded-xl shadow ${cat.color}`}
+            onClick={() => {
+              setActiveCategory(cat);
+              setActiveScreen('category');
+            }}
+          >
+            <span className="text-xl">{cat.icon}</span>
+            <span className="ml-2 font-semibold text-left text-sm leading-tight">{cat.name}</span>
+          </button>
+        ))}
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Rating Filter</label>
+        <input
+          type="range"
+          min={0}
+          max={5}
+          step={0.5}
+          value={filterRating}
+          onChange={e => setFilterRating(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        <div className="text-sm text-gray-600">Current Filter: {filterRating} stars and up</div>
+      </div>
+
+      <div>
+        <h2 className="text-lg font-semibold text-gray-800 mb-2">Popular Places</h2>
+        {filteredVenues.map(venue => (
+          <div key={venue.id} className="bg-white rounded-xl p-3 shadow mb-2">
+            <div className="flex gap-3">
+              <img src={venue.image} alt={venue.name} className="w-16 h-16 rounded object-cover" />
+              <div>
+                <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
+                <div className="text-sm text-gray-500 flex items-center gap-1">
+                  <Star className="w-4 h-4" /> {venue.rating}
+                </div>
+                <div className="text-sm text-gray-400 flex items-center gap-1">
+                  <MapPin className="w-4 h-4" /> {venue.distance}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderCategory = () => (
+    <div className="p-4">
+      <button onClick={() => setActiveScreen('home')} className="mb-4 flex items-center text-blue-500"><ArrowLeft className="w-4 h-4 mr-1" /> Back</button>
+      <h2 className="text-xl font-bold text-gray-800 mb-4">{activeCategory?.name}</h2>
+      <div className="space-y-3">
+        {filteredVenues.filter(v => v.category === activeCategory?.id).map(venue => (
+          <div key={venue.id} className="bg-white rounded-xl p-3 shadow">
+            <div className="flex gap-3">
+              <img src={venue.image} alt={venue.name} className="w-16 h-16 rounded object-cover" />
+              <div>
+                <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
+                <div className="text-sm text-gray-500 flex items-center gap-1">
+                  <Star className="w-4 h-4" /> {venue.rating}
+                </div>
+                <div className="text-sm text-gray-400 flex items-center gap-1">
+                  <MapPin className="w-4 h-4" /> {venue.distance}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="bg-gray-100 h-screen">
+      <div className="mx-auto max-w-md h-full border-x border-gray-200 bg-gray-50 relative">
+        {activeScreen === 'home' && renderHome()}
+        {activeScreen === 'category' && renderCategory()}
+        {activeScreen === 'map' && renderMap()}
+      </div>
+    </div>
+  );
+};
+
+export default WhatToDoApp;

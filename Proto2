@@ -58,29 +58,44 @@ const WhatToDoApp = () => {
 
   import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
-const renderMap = () => (
-  <div className="p-4">
-    <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
-    <MapContainer
-      center={[28.5383, -81.3792]} // Default center (Orlando)
-      zoom={13}
-      style={{ height: '20rem', width: '100%' }}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
-      />
-      {popularVenues.map((venue) => (
-        <Marker position={[venue.lat, venue.lng]} key={venue.id}>
-          <Popup>
-            {venue.name} <br /> {venue.rating} stars
-          </Popup>
-        </Marker>
-      ))}
-    </MapContainer>
-    <button onClick={() => setActiveScreen('home')} className="mt-4 text-blue-500 underline">Back to Home</button>
-  </div>
-);
+const renderMap = () => {
+  // Find a venue in the current city to center the map
+  const cityVenues = popularVenues.filter(v => v.city === city);
+  const defaultPosition = cityVenues.length
+    ? [cityVenues[0].lat, cityVenues[0].lng]
+    : [28.5383, -81.3792]; // Fallback to Orlando
+
+  return (
+    <div className="p-4">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
+      <MapContainer
+        center={defaultPosition}
+        zoom={12}
+        style={{ height: '350px', width: '100%' }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        {cityVenues.map(venue => (
+          <Marker key={venue.id} position={[venue.lat, venue.lng]}>
+            <Popup>
+              <strong>{venue.name}</strong><br />
+              {venue.rating} stars<br />
+              {venue.distance}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+      <button
+        onClick={() => setActiveScreen('home')}
+        className="mt-4 text-blue-500 underline"
+      >
+        Back to Home
+      </button>
+    </div>
+  );
+};
 
   const renderHome = () => (
     <div className="p-4 space-y-4">

@@ -1,3 +1,4 @@
+ npm install leaflet react-leaflet
 {
   "builds": [
     { "src": "package.json", "use": "@vercel/static-build" }
@@ -6,4 +7,3 @@
     { "src": "/(.*)", "dest": "/" }
   ]
 }
-npm install leaflet react-leaflet

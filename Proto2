@@ -1,6 +1,8 @@
 import 'leaflet/dist/leaflet.css';
 import React, { useState, useEffect } from 'react';
-import { Search, Map, Calendar, User, Menu, Star, MapPin, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
+import {
+  Search, Map, Calendar, User, Menu, Star, MapPin, Clock, ChevronRight, ArrowLeft
+} from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 const WhatToDoApp = () => {
@@ -11,23 +13,22 @@ const WhatToDoApp = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        if (latitude && longitude) {
-          if (latitude < 29.0) setCity('Daytona Beach');
-          else setCity('Orlando');
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (latitude && longitude) {
+            if (latitude < 29.0) setCity('Daytona Beach');
+            else setCity('Orlando');
+          }
+        },
+        (error) => {
+          console.error('Error fetching location:', error);
+          setCity('Orlando');
         }
-      },
-      (error) => {
-        console.error('Error fetching location:', error);
-        // Fallback to default city
-        setCity('Orlando');
-      }
-    );
-  }
-}, []);
+      );
+    }
+  }, []);
 
   const categories = [
     { id: 'food', name: 'Food & Dining', color: 'bg-orange-500', icon: '🍽️' },
@@ -48,7 +49,12 @@ const WhatToDoApp = () => {
     { id: 5, name: 'The Plaza Live', category: 'entertainment', image: 'https://via.placeholder.com/120x120?text=Plaza+Live', rating: 4.5, distance: '1.5 mi', reviews: ['Awesome shows!', 'Great acoustics!'], lat: 28.5455, lng: -81.3516, city: 'Orlando' }
   ];
 
-  const filteredVenues = popularVenues.filter(venue => venue.rating >= filterRating && venue.city === city && venue.name.toLowerCase().includes(searchQuery.toLowerCase()));
+  const filteredVenues = popularVenues.filter(
+    venue =>
+      venue.rating >= filterRating &&
+      venue.city === city &&
+      venue.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const renderHeader = () => (
     <header className="bg-white shadow p-4 sticky top-0 z-10 flex justify-between items-center border-b border-gray-200">
@@ -57,44 +63,61 @@ const WhatToDoApp = () => {
     </header>
   );
 
-const renderMap = () => {
-  // Find a venue in the current city to center the map
-  const cityVenues = popularVenues.filter(v => v.city === city);
-  const defaultPosition = cityVenues.length
-    ? [cityVenues[0].lat, cityVenues[0].lng]
-    : [28.5383, -81.3792]; // Fallback to Orlando
+  const renderMap = () => {
+    const cityVenues = popularVenues.filter(v => v.city === city);
+    const defaultPosition = cityVenues.length
+      ? [cityVenues[0].lat, cityVenues[0].lng]
+      : [28.5383, -81.3792];
 
-  return (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
-      <MapContainer
-        center={defaultPosition}
-        zoom={12}
-        style={{ height: '350px', width: '100%' }}
-      >
-        <TileLayer
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution="&copy; OpenStreetMap contributors"
-        />
-        {cityVenues.map(venue => (
-          <Marker key={venue.id} position={[venue.lat, venue.lng]}>
-            <Popup>
-              <strong>{venue.name}</strong><br />
-              {venue.rating} stars<br />
-              {venue.distance}
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
-      <button
-        onClick={() => setActiveScreen('home')}
-        className="mt-4 text-blue-500 underline"
-      >
-        Back to Home
-      </button>
+    return (
+      <div className="p-4">
+        <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
+        <MapContainer
+          center={defaultPosition}
+          zoom={12}
+          style={{ height: '350px', width: '100%' }}
+        >
+          <TileLayer
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            attribution="&copy; OpenStreetMap contributors"
+          />
+          {cityVenues.map(venue => (
+            <Marker key={venue.id} position={[venue.lat, venue.lng]}>
+              <Popup>
+                <strong>{venue.name}</strong><br />
+                {venue.rating} stars<br />
+                {venue.distance}
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+        <button
+          onClick={() => setActiveScreen('home')}
+          className="mt-4 text-blue-500 underline"
+        >
+          Back to Home
+        </button>
+      </div>
+    );
+  };
+
+  // Renders a single venue card
+  const VenueCard = ({ venue }) => (
+    <div className="bg-white rounded-xl p-3 shadow mb-2">
+      <div className="flex gap-3">
+        <img src={venue.image} alt={venue.name} className="w-16 h-16 rounded object-cover" />
+        <div>
+          <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
+          <div className="text-sm text-gray-500 flex items-center gap-1">
+            <Star className="w-4 h-4" /> {venue.rating}
+          </div>
+          <div className="text-sm text-gray-400 flex items-center gap-1">
+            <MapPin className="w-4 h-4" /> {venue.distance}
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
 
   const renderHome = () => (
     <div className="p-4 space-y-4">
@@ -110,7 +133,9 @@ const renderMap = () => {
         <Map onClick={() => setActiveScreen('map')} className="text-gray-500 cursor-pointer" />
       </div>
 
-      <div className="text-sm text-gray-600">Showing results in <strong>{city}</strong></div>
+      <div className="text-sm text-gray-600">
+        Showing results in <strong>{city}</strong>
+      </div>
 
       <div className="grid grid-cols-2 gap-3">
         {categories.map(cat => (
@@ -129,115 +154,62 @@ const renderMap = () => {
       </div>
 
       <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Rating Filter</label>
-  <div className="flex justify-between text-xs text-gray-500">
-    <span>0</span>
-    <span>5</span>
-  </div>
-  <input
-    type="range"
-    min={0}
-    max={5}
-    step={0.5}
-    value={filterRating}
-    onChange={(e) => setFilterRating(parseFloat(e.target.value))}
-    className="w-full"
-  />
-  <div className="text-sm text-gray-600">Current Filter: {filterRating} stars and up</div>
-</div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Rating Filter</label>
+        <div className="flex justify-between text-xs text-gray-500">
+          <span>0</span>
+          <span>5</span>
+        </div>
+        <input
+          type="range"
+          min={0}
+          max={5}
+          step={0.5}
+          value={filterRating}
+          onChange={(e) => setFilterRating(parseFloat(e.target.value))}
+          className="w-full"
+        />
+        <div className="text-sm text-gray-600">Current Filter: {filterRating} stars and up</div>
+      </div>
 
       <div>
         <h2 className="text-lg font-semibold text-gray-800 mb-2">Popular Places</h2>
-        {filteredVenues.map(venue => (
-          <div key={venue.id} className="bg-white rounded-xl p-3 shadow mb-2">
-  <div className="flex gap-3">
-    <img src={venue.image} alt={venue.name} className="w-16 h-16 rounded object-cover" />
-    <div>
-      <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
-      <div key={venue.id} className="bg-white rounded-xl p-3 shadow mb-2">
-  <div className="flex gap-3">
-    <img src={venue.image} alt={venue.name} className="w-16 h-16 rounded object-cover" />
-    <div>
-      <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
-      <div className="text-sm text-gray-500 flex items-center gap-1">
-        <Star className="w-4 h-4" /> {venue.rating}
-      </div>
-      <div className="text-sm text-gray-400 flex items-center gap-1">
-        <MapPin className="w-4 h-4" /> {venue.distance}
-      </div>
-    </div>
-  </div>
-</div>
-              <div>
-                <h3 className="text-base font-semibold text-gray-700">{venue.name}</h3>
-                <div className="text-sm text-gray-500 flex items-center gap-1">
-                  <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Rating Filter</label>
-  <div className="flex justify-between text-xs text-gray-500">
-    <span>0</span>
-    <span>5</span>
-  </div>
-  <input
-    type="range"
-    min={0}
-    max={5}
-    step={0.5}
-    value={filterRating}
-    onChange={(e) => setFilterRating(parseFloat(e.target.value))}
-    className="w-full"
-  />
-  <div className="text-sm text-gray-600">Current Filter: {filterRating} stars and up</div>
-</div>
-                  <MapPin className="w-4 h-4" /> {venue.distance}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+        {filteredVenues.length === 0 ? (
+          <p className="text-gray-500 text-sm">No venues found matching your criteria.</p>
+        ) : (
+          filteredVenues.map(venue => <VenueCard key={venue.id} venue={venue} />)
+        )}
       </div>
     </div>
   );
 
   const renderCategory = () => {
-  if (!activeCategory) {
-    return <p className="text-gray-500">No category selected.</p>;
-  }
+    if (!activeCategory) {
+      return <p className="text-gray-500">No category selected.</p>;
+    }
 
-  const categoryVenues = filteredVenues.filter((v) => v.category === activeCategory.id);
-  if (categoryVenues.length === 0) {
-    return <p className="text-gray-500">No venues found in this category.</p>;
-  }
+    const categoryVenues = filteredVenues.filter((v) => v.category === activeCategory.id);
 
-  return (
-    <div className="p-4">
-      <button onClick={() => setActiveScreen('home')} className="mb-4 flex items-center text-blue-500">
-        <ArrowLeft className="w-4 h-4 mr-1" /> Back
-      </button>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">{activeCategory.name}</h2>
-      <div className="space-y-3">
-        {categoryVenues.map((venue) => (
-          <div key={venue.id} className="bg-white rounded-xl p-3 shadow">
-            ...
-          </div>
-        ))}
+    if (categoryVenues.length === 0) {
+      return <p className="text-gray-500">No venues found in this category.</p>;
+    }
+
+    return (
+      <div className="p-4">
+        <button
+          onClick={() => setActiveScreen('home')}
+          className="mb-4 flex items-center text-blue-500"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" /> Back
+        </button>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">{activeCategory.name}</h2>
+        <div className="space-y-3">
+          {categoryVenues.map((venue) => (
+            <VenueCard key={venue.id} venue={venue} />
+          ))}
+        </div>
       </div>
-    </div>
-  );
-};
-h3>
-                <div className="text-sm text-gray-500 flex items-center gap-1">
-                  <Star className="w-4 h-4" /> {venue.rating}
-                </div>
-                <div className="text-sm text-gray-400 flex items-center gap-1">
-                  <MapPin className="w-4 h-4" /> {venue.distance}
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="bg-gray-100 h-screen overflow-auto">

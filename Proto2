@@ -41,6 +41,13 @@ const WhatToDoApp = () => {
 
   const filteredVenues = popularVenues.filter(venue => venue.rating >= filterRating && venue.city === city && venue.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
+  const renderHeader = () => (
+    <header className="bg-white shadow p-4 sticky top-0 z-10 flex justify-between items-center border-b border-gray-200">
+      <h1 className="text-lg font-bold text-gray-800">What To Do in {city}</h1>
+      <Menu className="text-gray-600" />
+    </header>
+  );
+
   const renderMap = () => (
     <div className="p-4">
       <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
@@ -143,8 +150,9 @@ const WhatToDoApp = () => {
   );
 
   return (
-    <div className="bg-gray-100 h-screen">
+    <div className="bg-gray-100 h-screen overflow-auto">
       <div className="mx-auto max-w-md h-full border-x border-gray-200 bg-gray-50 relative">
+        {renderHeader()}
         {activeScreen === 'home' && renderHome()}
         {activeScreen === 'category' && renderCategory()}
         {activeScreen === 'map' && renderMap()}

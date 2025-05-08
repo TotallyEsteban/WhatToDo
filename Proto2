@@ -9,16 +9,23 @@ const WhatToDoApp = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(position => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
         const { latitude, longitude } = position.coords;
         if (latitude && longitude) {
           if (latitude < 29.0) setCity('Daytona Beach');
           else setCity('Orlando');
         }
-      });
-    }
-  }, []);
+      },
+      (error) => {
+        console.error('Error fetching location:', error);
+        // Fallback to default city
+        setCity('Orlando');
+      }
+    );
+  }
+}, []);
 
   const categories = [
     { id: 'food', name: 'Food & Dining', color: 'bg-orange-500', icon: '🍽️' },

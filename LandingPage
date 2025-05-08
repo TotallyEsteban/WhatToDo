@@ -1,0 +1,36 @@
+import React from 'react';
+
+const LandingPage = () => {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-orange-100 via-white to-emerald-100 flex flex-col items-center justify-center p-4 text-center">
+      <h1 className="text-3xl font-extrabold text-gray-800 mb-2">What To Do</h1>
+      <p className="text-lg text-gray-600 mb-4">Discover the best food, fun, and events near you in Orlando!</p>
+
+      <img 
+        src="/qr-code.png" 
+        alt="Scan to open What To Do app" 
+        className="w-48 h-48 border border-gray-300 rounded mb-4"
+      />
+
+      <p className="text-sm text-gray-500 mb-6">Scan the QR code to get started instantly</p>
+
+      <div className="flex gap-4 mb-6">
+        <a href="#" className="bg-black text-white px-4 py-2 rounded hover:bg-gray-900">Download for iOS</a>
+        <a href="#" className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Download for Android</a>
+      </div>
+
+      <div className="bg-white shadow-lg p-4 rounded max-w-md w-full">
+        <h2 className="text-lg font-bold text-gray-800 mb-2">Featured Spots in Orlando</h2>
+        <ul className="text-left text-gray-700 space-y-1">
+          <li>• Universal Studios</li>
+          <li>• Dr. Phillips Center</li>
+          <li>• The Rusty Spoon</li>
+          <li>• Loch Haven Park</li>
+          <li>• The Plaza Live</li>
+        </ul>
+      </div>
+    </div>
+  );
+};
+
+export default LandingPage;

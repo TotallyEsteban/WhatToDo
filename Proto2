@@ -55,20 +55,31 @@ const WhatToDoApp = () => {
     </header>
   );
 
-  const renderMap = () => (
-    <div>
-  <h2 className="text-lg font-semibold text-gray-800 mb-2">Popular Places</h2>
-  {filteredVenues.length === 0 ? (
-    <p className="text-gray-500 text-sm">No venues found matching your criteria.</p>
-  ) : (
-    filteredVenues.map((venue) => (
-      <div key={venue.id} className="bg-white rounded-xl p-3 shadow mb-2">
-        ...
-      </div>
-    ))
-  )}
-</div>
-  );
+  import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+const renderMap = () => (
+  <div className="p-4">
+    <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
+    <MapContainer
+      center={[28.5383, -81.3792]} // Default center (Orlando)
+      zoom={13}
+      style={{ height: '20rem', width: '100%' }}
+    >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution="&copy; OpenStreetMap contributors"
+      />
+      {popularVenues.map((venue) => (
+        <Marker position={[venue.lat, venue.lng]} key={venue.id}>
+          <Popup>
+            {venue.name} <br /> {venue.rating} stars
+          </Popup>
+        </Marker>
+      ))}
+    </MapContainer>
+    <button onClick={() => setActiveScreen('home')} className="mt-4 text-blue-500 underline">Back to Home</button>
+  </div>
+);
 
   const renderHome = () => (
     <div className="p-4 space-y-4">

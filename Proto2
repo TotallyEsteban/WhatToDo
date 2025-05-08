@@ -1,6 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 import React, { useState, useEffect } from 'react';
 import { Search, Map, Calendar, User, Menu, Star, MapPin, Clock, ChevronRight, ArrowLeft } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 const WhatToDoApp = () => {
   const [activeScreen, setActiveScreen] = useState('home');
@@ -55,8 +56,6 @@ const WhatToDoApp = () => {
       <Menu className="text-gray-600" />
     </header>
   );
-
-  import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 
 const renderMap = () => {
   // Find a venue in the current city to center the map

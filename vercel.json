@@ -6,3 +6,4 @@
     { "src": "/(.*)", "dest": "/" }
   ]
 }
+npm install leaflet react-leaflet

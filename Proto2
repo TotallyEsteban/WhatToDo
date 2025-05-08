@@ -56,11 +56,18 @@ const WhatToDoApp = () => {
   );
 
   const renderMap = () => (
-    <div className="p-4">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">Map View</h2>
-      <div className="w-full h-96 bg-gray-300 flex items-center justify-center text-gray-600">Map Placeholder</div>
-      <button onClick={() => setActiveScreen('home')} className="mt-4 text-blue-500 underline">Back to Home</button>
-    </div>
+    <div>
+  <h2 className="text-lg font-semibold text-gray-800 mb-2">Popular Places</h2>
+  {filteredVenues.length === 0 ? (
+    <p className="text-gray-500 text-sm">No venues found matching your criteria.</p>
+  ) : (
+    filteredVenues.map((venue) => (
+      <div key={venue.id} className="bg-white rounded-xl p-3 shadow mb-2">
+        ...
+      </div>
+    ))
+  )}
+</div>
   );
 
   const renderHome = () => (
